@@ -3,8 +3,11 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from datetime import datetime
 
-from .models import User
+from . import models
+from .forms import ListingForm
+
 
 
 def index(request):
@@ -61,3 +64,23 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+def create(request):
+    if request.method == "POST":
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else: 
+        form = ListingForm()
+        return render(request, 'auctions/create.html', {
+            'form': form
+            })
+    
+
+
+
+
+
+
+

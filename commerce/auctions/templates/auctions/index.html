@@ -1,8 +1,24 @@
 {% extends "auctions/layout.html" %}
 
-{% block body %}
-    <h2>Active Listings</h2>
+{% block title %}Commerce{% endblock %}
 
-    TODO 
+{% block body %}
+
+    <h2>Active Listings</h2>
+ 
+    {% for item in listings %}
+		<div>
+			<a href="">
+				<div class="row">
+					<div class="col-md-4">
+						
+					</div>
+					<div class="col-md-8 align-self-center">
+						
+					</div>
+				</div>
+			</a>
+		</div>
+	{% endfor  %}
 
 {% endblock %}
