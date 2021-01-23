@@ -1,12 +1,20 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %} New item {% endblock %}
 
 {% block body %}
-<div class="container">
-	<form action="{% url 'create' %}" method="POST" class="form">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<button class="btn btn-primary" type="submit">Submit</button>
-	</form>
-</div>
+	{% if message %}
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
+				<p><strong>Alert!</strong>{{ message }}</p>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endif %}
+	<div class="container">
+		<form action="{% url 'list' %}" method="POST" class="form">
+			{% csrf_token %}
+			{{ form.as_p }}
+			{{ imageForm.as_p }}
+			<button class="btn btn-primary" type="submit">Submit</button>
+		</form>
+	</div>
 {% endblock %}

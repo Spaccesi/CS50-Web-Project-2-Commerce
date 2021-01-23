@@ -7,7 +7,10 @@
     <h2>Login</h2>
 
     {% if message %}
-        <div>{{ message }}</div>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
+            <p><strong>Alert!</strong>{{ message }}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     {% endif %}
     <div class="container text-center">
         <form action="{% url 'login' %}" method="post" class="container">

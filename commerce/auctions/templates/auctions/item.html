@@ -1,0 +1,105 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}{{ item.title }} - {{ item.owners }}{% endblock %}
+
+{% block body %}
+    {% if message %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+    <main class="container">
+        <div class="card container shadow p-3 mb-5 bg-white rounded" id="first-card">
+            <div class="card-img">
+                <img src="{{ item.img }}" class="w-100 self-align-center">
+            </div>
+            <div class="card-body">
+                <h1>{{ item.title }}</h1>
+                <hr>
+                <h3>Current price: {% if Bids.last.bids %}{{ Bids.last.bids }}{% else %}{{ item.initial_bid }}{% endif %}€</h3>
+                <h6>Initial bid: {{ item.initial_bid }}€</h6>
+                <p>{{ Bids.count }} bid(s).
+                {% if user.is_authenticated %}
+                    {% if Bids.last.users == request.user %}
+                        {% if item.bought %}
+                            <p>Congratulations! The item is yours.</p>
+                        {% else %}
+                            <p>Your bid is the current bid!</p>
+                        {% endif %}
+                    {% elif item.bought %}
+                        <p>Sorry, auction is over.</p>
+                    {% else %}
+                        <form action="{% url 'item' item.id %}" method="POST" class="form">
+                            {% csrf_token %}
+                            {{ BidForm }}
+                            <br>
+                            <button class="btn btn-primary" name="button" value="new_bid">New bid</button>
+                        </form>
+                    {% endif %}
+                {% elif item.bought %}
+                        <p>Sorry, auction is over.</p>
+                {% endif %}
+            </div>
+            {% if item.owners != request.user %}
+                <div class="col-12  card-body">
+                    <form action="{% url 'watchlist' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-secondary">Add to your Watchlist</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card container shadow p-3 mb-5 bg-white rounded" id="description">
+            <div class="card-body">
+                <h3>Details</h3>
+                <hr>
+                <ul>
+                    <li>
+                        <strong>Owner:</strong> {{ item.owners }}
+                    </li>
+                    <li>
+                        <strong>Category:</strong> {{ item.category }}
+                    </li>
+                    <li>
+                        <strong>Created on:</strong> {{ item.date }}
+                    </li>
+                </ul>
+                <h5>Description</h5>
+                <p>{{ item.description }}</p>
+            </div>
+        </div>
+        <div class="card container shadow p-3 mb-5 bg-white rounded">
+            <div class="card-body" id="comments">
+                <h3>Comments</h3>
+                <hr>
+                <div>
+                    {% for comment in Comments %}
+                        <div class="card">
+                            <div class="card-body"
+                                <h7 class=""><strong>{{ comment.users }}</strong></h5>
+                                <p class="text-secondary caption">{{ comment.date }}</p>
+                                <p>{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        <br>
+                    {% empty %}
+                        <div>
+                            <h5>No comments yet</h5>
+                            <p>Make the first one!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'item' item.id %}" method="POST" class="form">
+                        {% csrf_token %}
+                        {{ CommentForm }}
+                        <br>
+                        <button class="btn btn-primary" name="button" value="comment">Post</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+    
+{% endblock %}

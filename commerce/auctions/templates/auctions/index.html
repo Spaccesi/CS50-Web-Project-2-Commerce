@@ -3,22 +3,50 @@
 {% block title %}Commerce{% endblock %}
 
 {% block body %}
-
-    <h2>Active Listings</h2>
- 
-    {% for item in listings %}
-		<div>
-			<a href="">
-				<div class="row">
-					<div class="col-md-4">
-						
-					</div>
-					<div class="col-md-8 align-self-center">
-						
-					</div>
-				</div>
-			</a>
+<main class="container">
+    <h2 class="text-center">Active Listings</h2>
+	<hr>
+	<div class="row">
+		<div class="col-md-4 card shadow p-3 mb-5 bg-white rounded">
+			<div class="card-body">
+				<h3>Categories</h3>
+				<ul>
+					{% for category in Categories %}
+						<li>
+							<a href="">{{ category.categories }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+				<hr>
+				<h3>Sold items list</h3>
+				<ul>
+					<li>
+						<a href="">Sold items</a>
+					</li>
+				</ul>
+			</div>
 		</div>
-	{% endfor  %}
-
+		<div class="col-md-8">
+			{% for item in Items %}
+				{% if item.bought is not True %}
+					<div class="container">
+						<a href="{% url 'item' item.id %}" class="text-decoration-none text-reset">
+							<div class="row card container shadow p-3 mb-5 bg-white rounded">
+								<div class="col-md-5 container-fluid">
+									<img src="{{ item.img }}" class="img-fluid w-100">
+								</div>
+								<div class="col-md-7 card-body container">
+									<h3>{{ item.title }}</h3>
+									<h6>{{ item.description }}</h6>
+									<p>{{ item.date }}</p>
+									<h4>{{ item.prices }}€</h4>
+								</div>
+							</div>
+						</a>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</main>
 {% endblock %}
