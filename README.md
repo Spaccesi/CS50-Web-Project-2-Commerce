@@ -9,9 +9,10 @@ Check https://cs50.harvard.edu/web/2020/projects/2/commerce/
 
 Check 
 
-1. Entry Page: 
-2. Index Page: 
-3. Search: 
-4. New Page: 
-5. Edit Page: 
-6. Random Page: 
+1. Models: 
+2. Create Listing: 
+3. Active Listings Page: 
+4. Listing Page: 
+5. Watchlist: 
+6. Categories: 
+7. Django Admin Interface
