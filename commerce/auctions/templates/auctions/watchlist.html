@@ -1,26 +1,34 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}{{ watchlist.users.user }} watchlist's{% endblock %}
+{% block title %}{{ Watchlist.last.users.username }} Watchlist's{% endblock %}
 
 {% block body %}
 
-    <h2 class="text-center">{{ watchlist.users.username }} watchlist's</h2>
+    <h2 class="text-center">{{ Watchlist.last.users.username }} Watchlist's</h2>
 	<hr>
     {% for item in Watchlist %}
 		<div class="container">
-			<a href="{% url 'item' item.id %}" class="text-decoration-none text-reset">
-				<div class="row card container shadow p-3 mb-5 bg-white rounded">
-					<div class="col-md-5">
-						<img src="{{ items.img }}" class="img-fluid">
+			<a href="{% url 'item' item.items.id %}" class="text-decoration-none text-reset">
+				<div class="row border container shadow p-3 mb-5 bg-white rounded">
+					<div class="col-md-4">
+						<img src="{{ item.items.img }}" class="img-fluid">
 					</div>
 					<div class="col-md-7 align-self-center card-body">
-						<h3>{{ item.img }}</h3>
-						<h6>{{ item.description }}</h6>
-						<p>{{ item.date }}</p>
-						<h4>{{ item.prices }}€</h4>
+						<h3>{{ item.items.title }}</h3>
+						<h6>{{ item.items.description }}</h6>
+						<p>{{ item.items.date }}</p>
+						<h4>{{ item.items.prices }}€</h4>
+					</div>
+					<div class="col-md-1">
+						
 					</div>
 				</div>
 			</a>
+		</div>
+	{% empty %}
+		<div class="text-center">
+			<h3 class="">Nothing on your watchlist yet.</h3>
+			<a href="{% url 'index' %}">Add one here.</a>
 		</div>
 	{% endfor  %}
 

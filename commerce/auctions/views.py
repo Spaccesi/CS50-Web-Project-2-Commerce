@@ -10,7 +10,7 @@ from .models import User, Item, Category, Comment, Bid, Watchlist
 from .forms import ItemForm, BidForm, CommentForm
 def index(request):
     return render(request, "auctions/index.html",{
-        'Items':  Item.objects.all(),
+        'Items':  Item.objects.filter(bought=False),
         'Categories': Category.objects.all(),
     })
 
@@ -94,6 +94,10 @@ def item(request, item_id):
     item = Item.objects.get(pk=item_id)
     comments = Comment.objects.filter(items=item_id)
     bids = Bid.objects.filter(items=item_id)
+    if request.user.is_authenticated:
+        watchlist = Watchlist.objects.filter(users=request.user, items=item_id).exists()
+    else:
+        watchlist = False
     if request.method == 'POST':
         if request.user.is_authenticated:
             if request.POST.get("button") == "new_bid":
@@ -111,7 +115,6 @@ def item(request, item_id):
                         return render(request, 'auctions/item.html',{
                             'item': item,
                             'BidForm': BidForm(request.POST),
-                            'CommentForm': CommentForm(request.POST),
                             'Comments': comments,
                             'message': "Your bid must be bigger than the current price.",
                             'Bids': bids
@@ -147,18 +150,25 @@ def item(request, item_id):
             'BidForm': BidForm(),
             'CommentForm': CommentForm(),
             'Comments': comments,
-            'Bids': bids
+            'Bids': bids, 
+            'watchlist': watchlist
         })
 
 @login_required(login_url='/login')
 def watchlist(request, item_id=None):
     if request.method == 'POST':
-        item = Item.objects.get(pk=item_id)
-        form = Watchlist()
-        form.items = item
-        form.users = request.user
-        form.save()
-        return HttpResponseRedirect('/')
+        if Watchlist.objects.filter(users=request.user, items=item_id).exists():
+            Watchlist.objects.filter(users=request.user, items=item_id).delete()
+        else:
+            item = Item.objects.get(pk=item_id)
+            form = Watchlist()
+            form.items = item
+            form.users = request.user
+            form.save()
+        watchlist = Watchlist.objects.filter(users=request.user)
+        return render(request, 'auctions/watchlist.html', {
+            'Watchlist': watchlist
+        })
     else:
         watchlist = Watchlist.objects.filter(users=request.user)
         return render(request, 'auctions/watchlist.html', {
@@ -167,6 +177,27 @@ def watchlist(request, item_id=None):
 
 def filter(request, filter):
     if filter == "sold":
-        pass
+        return render(request, "auctions/index.html",{
+            'Items':  Item.objects.filter(bought=True),
+            'Categories': Category.objects.all(),
+        })
     else:
-        pass
+        return render(request, "auctions/index.html",{
+            'Items':  Item.objects.filter(category=filter, bought=False),
+            'Categories': Category.objects.all(),
+        })
+
+@login_required(login_url='/login')
+def close_auction(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    if request.user == item.owners:
+        item.bought = True
+        return render(request, 'auctions/item.html',{
+            'item': item,
+        })
+    else: 
+        return render(request, 'auctions/item.html',{
+            'item': item,
+            'message': "You are not the owner of this item!"
+        })
+    

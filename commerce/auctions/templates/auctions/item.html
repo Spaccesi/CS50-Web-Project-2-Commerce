@@ -10,47 +10,75 @@
         </div>
     {% endif %}
     <main class="container">
-        <div class="card container shadow p-3 mb-5 bg-white rounded" id="first-card">
-            <div class="card-img">
+        <div class="row container shadow p-3 mb-5 bg-white rounded card-body" id="first-card">
+            <div class="col-md-3 align-self-center">
                 <img src="{{ item.img }}" class="w-100 self-align-center">
             </div>
-            <div class="card-body">
+            <div class="col-md-8 card-body">
                 <h1>{{ item.title }}</h1>
                 <hr>
-                <h3>Current price: {% if Bids.last.bids %}{{ Bids.last.bids }}{% else %}{{ item.initial_bid }}{% endif %}€</h3>
+                <h3>Last bid: {% if Bids.last.bids %}{{ Bids.last.bids }}{% else %}{{ item.initial_bid }}{% endif %}€</h3>
                 <h6>Initial bid: {{ item.initial_bid }}€</h6>
                 <p>{{ Bids.count }} bid(s).
                 {% if user.is_authenticated %}
-                    {% if Bids.last.users == request.user %}
+                    {% if item.owners == request.user %}
+                        <p></p>
+                    {% elif Bids.last.users == request.user %}
                         {% if item.bought %}
-                            <p>Congratulations! The item is yours.</p>
+                            <p>Congratulations! You won the auction.</p>
                         {% else %}
                             <p>Your bid is the current bid!</p>
                         {% endif %}
-                    {% elif item.bought %}
+                    {% elif item.bought and not Bids.last.users == request.user %}
                         <p>Sorry, auction is over.</p>
                     {% else %}
                         <form action="{% url 'item' item.id %}" method="POST" class="form">
                             {% csrf_token %}
                             {{ BidForm }}
                             <br>
-                            <button class="btn btn-primary" name="button" value="new_bid">New bid</button>
+                            <button class="btn btn-primary" name="button" value="new_bid">Place bid</button>
                         </form>
                     {% endif %}
-                {% elif item.bought %}
+                {% else %}
+                    {% if item.bought %}
                         <p>Sorry, auction is over.</p>
+                    {% else %}
+                        <p>You are not log in.</p>
+                        <div class="d-flex">
+                            <form action="{% url 'login' %}" class="form">
+                                <button class="btn btn-primary">Login</button>
+                            </form>
+                            &nbsp;&nbsp;
+                            <form action="{% url 'register' %}" class="form">
+                                <button class="btn btn-outline-primary">Register</button>
+                            </form>
+                        </div>
+                    {% endif %}
                 {% endif %}
-            </div>
-            {% if item.owners != request.user %}
-                <div class="col-12  card-body">
+            {% if item.owners != request.user and user.is_authenticated %}
+                <div class="card-body container">
                     <form action="{% url 'watchlist' item.id %}" method="POST">
                         {% csrf_token %}
-                        <button class="btn btn-secondary">Add to your Watchlist</button>
+                        <button class="btn btn-secondary">
+                        {% if watchlist %}
+                            <i class="fas fa-bookmark"></i>
+                        {% else %}
+                            <i class="far fa-bookmark"></i>
+                        {% endif %}
+                        Watchlist
+                        </button>
                     </form>
                 </div>
+            {% else %}
+                {% if not item.bought and user.is_authenticated%}
+                    <form action="{% url 'close_auction' item.id %}" class="form">
+                        <button class="btn btn-outline-primary">Close auction</button>
+                    </form>
+                {% endif %}
             {% endif %}
+            </div>
         </div>
-        <div class="card container shadow p-3 mb-5 bg-white rounded" id="description">
+        <div class="border row container shadow p-3 mb-5 bg-white rounded" id="description">
             <div class="card-body">
                 <h3>Details</h3>
                 <hr>
@@ -59,7 +87,7 @@
                         <strong>Owner:</strong> {{ item.owners }}
                     </li>
                     <li>
-                        <strong>Category:</strong> {{ item.category }}
+                        <strong>Category:</strong> <a href="{% url 'filter' item.category.id %}">{{ item.category }}</a>
                     </li>
                     <li>
                         <strong>Created on:</strong> {{ item.date }}
@@ -69,16 +97,16 @@
                 <p>{{ item.description }}</p>
             </div>
         </div>
-        <div class="card container shadow p-3 mb-5 bg-white rounded">
+        <div class="card row container shadow p-3 mb-5 bg-white rounded">
             <div class="card-body" id="comments">
                 <h3>Comments</h3>
                 <hr>
                 <div>
                     {% for comment in Comments %}
                         <div class="card">
-                            <div class="card-body"
+                            <div class="card-body">
                                 <h7 class=""><strong>{{ comment.users }}</strong></h5>
-                                <p class="text-secondary caption">{{ comment.date }}</p>
+                                <small>{{ comment.date }}</small>
                                 <p>{{ comment.content }}</p>
                             </div>
                         </div>
