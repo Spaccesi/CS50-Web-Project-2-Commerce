@@ -126,6 +126,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+TEST_RUNNER = 'django_heroku.HerokuDiscoverRunner'
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 django_heroku.settings(locals())
