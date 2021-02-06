@@ -192,6 +192,7 @@ def close_auction(request, item_id):
     item = Item.objects.get(pk=item_id)
     if request.user == item.owners:
         item.bought = True
+        item.save()
         return render(request, 'auctions/item.html',{
             'item': item,
         })
