@@ -15,3 +15,8 @@ Check
 4. New Page: 
 5. Edit Page: 
 6. Random Page: 
+
+## Branches
+
+1. master: CS50w project 
+2. heroku: changes for production 
